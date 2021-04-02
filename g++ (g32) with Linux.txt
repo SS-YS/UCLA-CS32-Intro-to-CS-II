@@ -1,0 +1,47 @@
+http://web.cs.ucla.edu/classes/winter21/cs32/
+
+1. Create a zip file that contains the source files. Assume it is named "VM.zip". 
+
+2. Connect to the UCLA VPN
+    (1) Enter password:
+	sm**************LA!/   +   (Duo Mobile里6位数的passcode)
+
+3. Log in to the SEASnet CS32 Linux Server
+    (1) In Terminal:
+	ssh classysh@cs32.seas.ucla.edu
+    (2) Enter password:
+	20**Engi
+
+4. Copy the file from my MacBook to the Server
+    (1) Copy the file to my MacBook's Desktop
+    (2) Open a new Terminal window
+    (3) Copy the file from my MacBook's Desktop to the Server's default directory (~):
+        scp Desktop/Wurd.zip classysh@cs32.seas.ucla.edu:~
+    (4) Enter password
+	
+5. Unzip, build and run
+    (1) Switch to the Terminal window that has logged in to the Server
+    (2) Unbundle the zip file into its own directory "proj0":
+	unzip -j -a -d Wurd Wurd.zip
+    (3) Build an executable file "vm" from the source files:
+	g32 -o vm proj0/*.cpp    
+    (4) Execute "vm":
+	./vm
+
+6. Exit the shell
+    (1) In Terminal:
+	exit
+
+* Useful commands
+    (1) List the contents of a directory: 
+	ls
+    (2) Change the current directory:
+	cd
+    (3) Delete a file:
+	rm
+    (4) Delete a directory (and everything inside):
+	rm -R
+    (5) Examine "hello.cpp" under Linux:
+	nano hello.cpp
+    (6) Copy "hello.cpp" from the Server's Desktop directory to its default directory:
+	cp Desktop/hello.cpp ~
