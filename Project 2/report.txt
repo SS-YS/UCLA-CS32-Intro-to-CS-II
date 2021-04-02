@@ -1,0 +1,330 @@
+a.
+In my Sequence class, I declare two private data members and a private struct. The first private data member is "m_size", which records the size of the Sequence. The private struct is "Node". It has three data members: "value" stores the value, "next" stores a pointer to the next Node, and "prev" stores a pointer to the previous Node. Another private data member is "dummy", which is a pointer to a Node. The Node that "dummy" points to works as a dummy node. This is the overall design of my doubly-linked list. 
+
+b.
+Sequence::insert(pos, value):
+    check if pos is in bound, if not, return -1
+    create p, a pointer that points to the dummy node
+    traverse until p points to the node before the insert position
+    insert a new node after the node that p points to
+    increment size
+    return pos 
+
+Sequence::insert(value):
+    create p, a pointer that points to the first node (after dummy)
+    traverse all the nodes:
+        if value <= current node's value:
+	      record current position i
+	      break
+	  else:
+	      proceed to the next node
+    insert value at i
+    return i
+
+Sequence::erase(pos):
+    check if pos is bound, if not, return false
+    create p, a pointer that points to the first node (after dummy)
+    traverse until p points to the node to be erased
+    erase the node that p points to 
+    decrement size
+    return true 
+
+Sequence::remove(value):
+    create p, a pointer that points to the first node (after dummy)
+    create numRemoved that records the number of items removed
+    traverse all the nodes:
+        if current node's value == value:
+            erase current node
+		 increment numRemoved
+        proceed to the next node
+    return numRemoved  
+
+Sequence::swap(other):
+    swap m_size
+    swap the dummy node
+
+subsequence(seq1, seq2):
+    check special cases, if applicable, return -1
+    traverse every possible beginning position of the subsequence:
+        for each possible beginning position, traverse every item in seq2:
+            if the corresponding items do not match:
+		     break
+		 if reached the end of seq2:
+		     return current beginning position
+    no such subsequence exists, return -1
+
+interleave(seq1, seq2, result):
+    create tempResult, a copy of result, to deal with aliasing
+    erase all items in tempResult
+    create largerSize that stores the larger of seq1.size() and seq2.size()
+    for i from 0 to largerSize - 1:
+        if seq1 has an item at position i:
+	      insert the item at the end of tempResult 
+        if seq2 has an item at position i:
+    	      insert the item at the end of tempResult 
+    copy tempResult back to result
+
+c.  
+void checkSequence(const Sequence& s, const ItemType a[], int n)
+{
+    assert(s.size() == n);
+    for (int i = 0; i < n; i++)
+    {
+        ItemType value;
+        s.get(i, value);
+        assert(value == a[i]);
+    }
+}
+
+Tests for a sequence of strings:
+
+Sequence s;
+string* a;
+
+// Test copy constructor & assignment operator
+s.insert(0, "A");
+s.insert(1, "B");
+s.insert(0, "C");
+s.insert("A");
+Sequence s1(s);
+a = new string[4] { "A", "C", "A", "B" };
+checkSequence(s1, a, 4);                        // test
+s.insert(2, "D");
+s.insert(4, "E");
+checkSequence(s1, a, 4);                        // test
+delete [] a;
+s1 = s;
+a = new string[6] { "A", "C", "D", "A", "E", "B" };
+checkSequence(s1, a, 6);                        // test
+s1.remove("A");
+s1.erase(0);
+checkSequence(s, a, 6);                         // test
+delete [] a;
+s = s1;
+a = new string[3] { "D", "E", "B" };
+checkSequence(s, a, 3);                         // test
+delete [] a;
+
+// Test empty() & size()
+assert(!s.empty());                             // test
+assert(s.size() == 3);                          // test
+s.erase(1);
+s.erase(1);
+assert(s.size() == 1);                          // test
+s.remove("D");
+assert(s.empty());                              // test
+
+// Test insert()
+assert(s.insert(-2, "") == -1);                 // pos < 0
+assert(s.empty());                              // s should remain unchanged
+assert(s.insert(0, "Hi") == 0);                 // test
+assert(s.insert(2, "Hello") == -1);             // pos > size()
+assert(s.insert("Ha") == 0);                    // test
+assert(s.insert("Haa") == 1);                   // test
+assert(s.insert(3, "") == 3);                   // test
+assert(s.insert("x") == 4);                     // test
+a = new string[5] { "Ha", "Haa", "Hi", "", "x" };
+checkSequence(s, a, 5);                         // test
+
+// Test erase() & remove()
+assert(!s.erase(-1));                           // pos < 0
+assert(!s.erase(5));                            // pos >= size()
+checkSequence(s, a, 5);                         // s should remain unchanged
+delete [] a;
+assert(s.erase(4));                             // test
+assert(s.remove("Ha") == 1);                    // test
+s.insert("");
+assert(s.remove(" ") == 0);                     // no such item exists
+assert(s.remove("Ha") == 0);                    // no such item exists
+assert(s.remove("") == 2);                      // test
+assert(s.erase(1));                             // test
+a = new string[1] { "Haa" };
+checkSequence(s, a, 1);
+
+// Test get() & set() & find()
+ItemType value = "s";
+assert(!s.get(-1, value));                      // pos < 0
+assert(!s.get(5, value));                       // pos >= size()
+assert(value == "s");                           // value should remain unchanged
+assert(!s.set(-5, value));                      // pos < 0
+assert(!s.set(6, value));                       // pos >= size()
+checkSequence(s, a, 1);                         // s should remain unchanged
+delete [] a;
+assert(s.find("A") == -1);                      // no such item exists
+s.insert("A");
+s.insert("BBJ");
+assert(s.find("A") == 0);                       // test
+s.insert("Bk");
+s.insert(3, "C");
+assert(s.get(3, value) && value == "C");        // test
+assert(s.find("Haa") == 4);                     // test
+assert(s.set(2, "Haa"));                        // test
+assert(s.find("Haa") == 2);                     // multiple occurrences
+assert(s.set(1, "o"));                          // test
+a = new string[5] { "A", "o", "Haa", "C", "Haa" };
+checkSequence(s, a, 5);                         // test
+
+// Test swap()
+s.swap(s1);
+checkSequence(s1, a, 5);                        // test
+delete [] a;
+a = new string[3] { "D", "E", "B" };
+checkSequence(s, a, 3);                         // test
+delete [] a;
+
+// Test subsequence()
+while (!s1.empty())
+    s1.erase(0);
+s.insert("A");
+s.insert("C");
+s.insert("F");
+assert(subsequence(s, s1) == -1);               // s1 is empty
+s1.insert("G");
+assert(subsequence(s, s1) == -1);               // no such subsequence exists
+s.insert("G");
+assert(subsequence(s, s1) == 6);                // test
+s1.insert("B");
+assert(subsequence(s, s1) == -1);               // no such subsequence exists
+s1.insert(1, "F");
+assert(subsequence(s, s1) == 4);                // test
+assert(subsequence(s1, s) == -1);               // s larger than s1
+assert(subsequence(s, s) == 0);                 // aliasing
+assert(subsequence(s1, s1) == 0);               // aliasing
+
+// Test interleave()
+Sequence result;
+result.insert("R");
+interleave(s1, s1, result);
+a = new string[6] { "B", "B", "F", "F", "G", "G" };
+checkSequence(result, a, 6);                    // two idential sequences
+delete [] a;
+interleave(s, s1, result);
+a = new string[10] { "A", "B", "C", "F", "D", "G", "E", "B", "F", "G" };
+checkSequence(result, a, 10);                   // test
+delete [] a;
+interleave(s1, s, result);
+a = new string[10] { "B", "A", "F", "C", "G", "D", "E", "B", "F", "G" };
+checkSequence(result, a, 10);                   // test
+interleave(s1, s, s1);
+checkSequence(s1, a, 10);                       // aliasing
+delete [] a;
+s1.remove("B");
+s1.remove("F");
+s1.remove("G");
+interleave(s1, s, s);
+a = new string[11] { "A", "A", "C", "C", "D", "D", "E", "E", "B", "F", "G" };
+checkSequence(s, a, 11);                        // aliasing
+delete [] a;
+
+Tests for a sequence of unsigned longs:
+
+Sequence s;
+unsigned long* a;
+
+// Test copy constructor & assignment operator
+s.insert(0, 0);
+s.insert(1, 1);
+s.insert(0, 2);
+s.insert(0);
+Sequence s1(s);
+a = new unsigned long[4] { 0, 2, 0, 1 };
+checkSequence(s1, a, 4);                        // test
+s.insert(2, 8);
+s.insert(4, 7);
+checkSequence(s1, a, 4);                        // test
+delete [] a;
+s1 = s;
+a = new unsigned long[6] { 0, 2, 8, 0, 7, 1 };
+checkSequence(s1, a, 6);                        // test
+delete [] a;
+
+// Test empty() & size()
+assert(!s.empty());                             // test
+assert(s.size() == 6);                          // test
+s.erase(0);
+assert(s.size() == 5);                          // test
+while (!s.empty())
+    s.erase(0);
+assert(s.size() == 0);                          // test
+
+// Test insert()
+assert(s.insert(-2, 5) == -1);                  // pos < 0
+assert(s.empty());                              // s should remain unchanged
+assert(s.insert(0, 3) == 0);                    // test
+assert(s.insert(2, 9) == -1);                   // pos > size()
+assert(s.insert(1) == 0);                       // test
+assert(s.insert(1, 5) == 1);                    // test
+a = new unsigned long[3] { 1, 5, 3 };
+checkSequence(s, a, 3);                         // test
+
+// Test erase() & remove()
+assert(!s.erase(-1));                           // pos < 0
+assert(!s.erase(3));                            // pos >= size()
+checkSequence(s, a, 3);                         // s should remain unchanged
+delete [] a;
+assert(s.erase(1));                             // test
+assert(s.remove(3) == 1);                       // test
+a = new unsigned long[1] { 1 };
+checkSequence(s, a, 1);
+
+// Test get() & set() & find()
+ItemType value = -9;
+assert(!s.get(-1, value));                      // pos < 0
+assert(!s.get(5, value));                       // pos >= size()
+assert(value == -9);                            // value should remain unchanged
+assert(!s.set(-5, value));                      // pos < 0
+assert(!s.set(6, value));                       // pos >= size()
+checkSequence(s, a, 1);                         // s should remain unchanged
+delete [] a;
+assert(s.find(3) == -1);                        // no such item exists
+s.insert(1);
+s.insert(5);
+assert(s.find(5) == 2);                         // test
+assert(s.get(0, value) && value == 1);          // test
+assert(s.find(1) == 0);                         // multiple occurrences
+assert(s.set(2, 6));                            // test
+a = new unsigned long[4] { 1, 1, 6 };
+checkSequence(s, a, 3);                         // test
+
+// Test swap()
+s.swap(s1);
+checkSequence(s1, a, 3);                        // test
+delete [] a;
+a = new unsigned long[6] { 0, 2, 8, 0, 7, 1 };
+checkSequence(s, a, 6);                         // test
+delete [] a;
+
+// Test subsequence()
+while (!s1.empty())
+    s1.erase(0);
+s.insert(1);
+s.insert(3);
+s.insert(6);
+assert(subsequence(s, s1) == -1);               // s1 is empty
+s1.insert(4);
+assert(subsequence(s, s1) == -1);               // no such subsequence exists
+s.insert(4);
+assert(subsequence(s, s1) == 4);                // test
+s1.insert(2);
+assert(subsequence(s, s1) == -1);               // no such subsequence exists
+s1.insert(1, 3);
+assert(subsequence(s, s1) == 2);                // test
+assert(subsequence(s1, s) == -1);               // s larger than s1
+assert(subsequence(s, s) == 0);                 // aliasing
+assert(subsequence(s1, s1) == 0);               // aliasing
+
+// Test interleave()
+Sequence result;
+result.insert(-1);
+interleave(s1, s1, result);
+a = new unsigned long[6] { 2, 2, 3, 3, 4, 4 };
+checkSequence(result, a, 6);                    // two idential sequences
+delete [] a;
+s.remove(0);
+s.remove(1);
+interleave(s, s1, result);
+a = new unsigned long[9] { 2, 2, 3, 3, 4, 4, 6, 8, 7 };
+checkSequence(result, a, 9);                    // test
+interleave(s, s1, s);
+checkSequence(s, a, 9);                         // aliasing
+delete [] a;
