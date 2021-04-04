@@ -1,4 +1,4 @@
-Taken in Winter 2020 with Prof. David Smallberg & Prof. Carey Nachenberg
+Taken in Winter 2021 with Prof. David Smallberg & Prof. Carey Nachenberg
 ### Scores
 Project 1: 100 / 100  
 Project 2: 99 / 100 (-1 in report)  
