@@ -4,13 +4,13 @@ http://web.cs.ucla.edu/classes/winter21/cs32/
 
 2. Connect to the UCLA VPN
     (1) Enter password:
-	sm**************LA!/   +   (Duo Mobile里6位数的passcode)
+	*** / + (Duo Mobile里6位数的passcode)
 
 3. Log in to the SEASnet CS32 Linux Server
     (1) In Terminal:
-	ssh classysh@cs32.seas.ucla.edu
+	ssh ***@cs32.seas.ucla.edu
     (2) Enter password:
-	20**Engi
+	***
 
 4. Copy the file from my MacBook to the Server
     (1) Copy the file to my MacBook's Desktop
